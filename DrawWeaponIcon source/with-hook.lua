@@ -57,20 +57,16 @@ drawWeaponIconHook = hook.new(
     'void(*)(void*, void*, float, float, float, float, float)',
     function(self, ped, left, bottom, right, top, f)
         drawWeaponIconHook(self, ped, left, bottom, right, top, f)
-        if enabled[0] then
-            pcall(function()
-                local weapon = getCurrentCharWeapon(PLAYER_PED)
-                color.r = iconColor[0] * 255
-                color.g = iconColor[1] * 255
-                color.b = iconColor[2] * 255
-                color.a = iconColor[3] * 255
-                if weapon <= 0 then
-                    local fistSprite = cast('void*', gta._ZN4CHud7SpritesE)
-                    gta._ZN9CSprite2d4DrawEffffRK5CRGBA(fistSprite, posX[0] - sizeW[0] / 2, posY[0] - sizeH[0] / 2, sizeW[0], sizeH[0], color)
-                else
-                    gta._ZN7CSprite18RenderOneXLUSpriteEfffffhhhsfhhhff(posX[0], posY[0], 10.0, sizeW[0] * 0.5, sizeH[0] * 0.5, color.r, color.g, color.b, 255, 1.0, color.a, 0, 0, 0.0, 0.0)
-                end
-            end)
+        if not enabled[0] then return end
+        local weapon = getCurrentCharWeapon(PLAYER_PED)
+        color.r = iconColor[0] * 255
+        color.g = iconColor[1] * 255
+        color.b = iconColor[2] * 255
+        color.a = iconColor[3] * 255
+        if weapon <= 0 then
+            gta._ZN9CSprite2d4DrawEffffRK5CRGBA(cast('void*', gta._ZN4CHud7SpritesE), posX[0] - sizeW[0] / 2, posY[0] - sizeH[0] / 2, sizeW[0], sizeH[0], color)
+        else
+            gta._ZN7CSprite18RenderOneXLUSpriteEfffffhhhsfhhhff(posX[0], posY[0], 10.0, sizeW[0] * 0.5, sizeH[0] * 0.5, color.r, color.g, color.b, 255, 1.0, color.a, 0, 0, 0.0, 0.0)
         end
     end,
     cast('uintptr_t', cast('void*', gta._ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf))
@@ -95,9 +91,12 @@ imgui.OnFrame(
 )
 
 function main()
-    while not isSampAvailable() do wait(100) end
-    sampRegisterChatCommand('weaponicon', function()
-        WinState[0] = not WinState[0]
+    sampRegisterChatCommand('weaponicon', function() 
+        WinState[0] = not WinState[0] 
     end)
-    while true do wait(0) end
+    wait(-1)
 end
+
+addEventHandler('onScriptTerminate', function(scr)
+    if scr == script.this then drawWeaponIconHook.stop() end
+end)
