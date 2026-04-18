@@ -1,4 +1,5 @@
-script_name("WeaponIconWithoutHook")
+script_name("WeaponIcon")
+script_author("Guzers")
 
 local imgui = require 'mimgui'
 local ffi   = require('ffi')
@@ -8,7 +9,7 @@ local cast = ffi.cast
 local gta  = ffi.load('GTASA')
 local new  = imgui.new
 
-ffi.cdef[[
+ffi.cdef([[
     typedef struct {
         uint8_t r, g, b, a;
     } CRGBA;
@@ -17,7 +18,7 @@ ffi.cdef[[
     void _ZN9CSprite2d4DrawEffffRK5CRGBA(void*, float, float, float, float, CRGBA*);
     void _ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(void*, void*, float, float, float, float, float);
     extern void* _ZN4CHud7SpritesE;
-]]
+]])
 
 local defaultConfig = {
     enabled = true,
@@ -43,10 +44,8 @@ local function saveConfig()
     config.enabled = enabled[0]
     config.x = posX[0]; config.y = posY[0]
     config.w = sizeW[0]; config.h = sizeH[0]
-    config.R = iconColor[0] * 255
-    config.G = iconColor[1] * 255
-    config.B = iconColor[2] * 255
-    config.A = iconColor[3] * 255
+    config.R = iconColor[0] * 255; config.G = iconColor[1] * 255
+    config.B = iconColor[2] * 255; config.A = iconColor[3] * 255
     cfg.save(config, 'weaponicon')
 end
 
@@ -60,7 +59,7 @@ local function onD3DPresent()
     if weapon <= 0 then
         gta._ZN9CSprite2d4DrawEffffRK5CRGBA(cast('void*', gta._ZN4CHud7SpritesE), posX[0] - sizeW[0] / 2, posY[0] - sizeH[0] / 2, sizeW[0], sizeH[0], color)
     else
-        gta._ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(nil, cast('void*', getCharPointer(PLAYER_PED)), -9999, -9999, -9998, -9998, -9998)
+        gta._ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(nil, cast('void*', getCharPointer(PLAYER_PED)), -9999, -9999, -9998, -9998, 0.0)
         gta._ZN7CSprite18RenderOneXLUSpriteEfffffhhhsfhhhff(posX[0], posY[0], 10.0, sizeW[0] * 0.5, sizeH[0] * 0.5, color.r, color.g, color.b, 255, 1.0, color.a, 0, 0, 0.0, 0.0)
     end
 end
@@ -83,13 +82,11 @@ imgui.OnFrame(
     end
 )
 
+addEventHandler('onD3DPresent', onD3DPresent)
+
 function main()
-    while not isSampAvailable() do wait(100) end
-    
-    addEventHandler("onD3DPresent", onD3DPresent)
-    
-    sampRegisterChatCommand('weaponicon', function()
-        WinState[0] = not WinState[0]
+    sampRegisterChatCommand('weaponicon', function() 
+        WinState[0] = not WinState[0] 
     end)
-    while true do wait(0) end
+    wait(-1)
 end
