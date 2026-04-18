@@ -1,5 +1,4 @@
-script_name("WeaponIcon")
-script_author("Guzers")
+script_name("WeaponIconWithoutHook")
 
 local imgui = require 'mimgui'
 local ffi   = require('ffi')
