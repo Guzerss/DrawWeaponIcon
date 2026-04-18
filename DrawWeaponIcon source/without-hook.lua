@@ -9,16 +9,20 @@ local cast = ffi.cast
 local gta  = ffi.load('GTASA')
 local new  = imgui.new
 
-ffi.cdef([[
+ffi.cdef[[
     typedef struct {
         uint8_t r, g, b, a;
     } CRGBA;
-    
+
+    typedef struct {
+        float left, bottom, right, top;
+    } CRect;
+
     void _ZN7CSprite18RenderOneXLUSpriteEfffffhhhsfhhhff(float, float, float, float, float, uint8_t, uint8_t, uint8_t, int16_t, float, uint8_t, uint8_t, uint8_t, float, float);
     void _ZN9CSprite2d4DrawEffffRK5CRGBA(void*, float, float, float, float, CRGBA*);
-    void _ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(void*, void*, float, float, float, float, float);
+    void _ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(void*, void*, CRect, float);
     extern void* _ZN4CHud7SpritesE;
-]])
+]]
 
 local defaultConfig = {
     enabled = true,
@@ -59,7 +63,8 @@ local function onD3DPresent()
     if weapon <= 0 then
         gta._ZN9CSprite2d4DrawEffffRK5CRGBA(cast('void*', gta._ZN4CHud7SpritesE), posX[0] - sizeW[0] / 2, posY[0] - sizeH[0] / 2, sizeW[0], sizeH[0], color)
     else
-        gta._ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(nil, cast('void*', getCharPointer(PLAYER_PED)), -9999, -9999, -9998, -9998, 0.0)
+        local CRect = ffi.new('CRect', {9999, 9999, 9999, 9999})
+        gta._ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(nil, cast('void*', getCharPointer(PLAYER_PED)), CRect, 0.0)
         gta._ZN7CSprite18RenderOneXLUSpriteEfffffhhhsfhhhff(posX[0], posY[0], 10.0, sizeW[0] * 0.5, sizeH[0] * 0.5, color.r, color.g, color.b, 255, 1.0, color.a, 0, 0, 0.0, 0.0)
     end
 end
