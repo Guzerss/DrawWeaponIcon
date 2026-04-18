@@ -14,9 +14,13 @@ ffi.cdef[[
         uint8_t r, g, b, a;
     } CRGBA;
 
+    typedef struct {
+        float left, bottom, right, top;
+    } CRect;
+
     void _ZN7CSprite18RenderOneXLUSpriteEfffffhhhsfhhhff(float ScreenX, float ScreenY, float ScreenZ, float SizeX, float SizeY, uint8_t R, uint8_t G, uint8_t B, int16_t Intensity16, float RecipZ, uint8_t Alpha, uint8_t FlipU, uint8_t FlipV, float uvPad1, float uvPad2);
     void _ZN9CSprite2d4DrawEffffRK5CRGBA(void* sprite, float x, float y, float w, float h, CRGBA* color);
-    void _ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(void* self, void* ped, float left, float bottom, float right, float top, float f);
+    void _ZN17CWidgetPlayerInfo14DrawWeaponIconEP4CPed5CRectf(void* self, void* ped, CRect rect, float f);
     extern void* _ZN4CHud7SpritesE;
 ]]
 
